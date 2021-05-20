@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Cors = require("cors");
 const bodyParser = require("body-parser");
-//require("dotenv").config();
+require("dotenv").config();
 
 // App config
 const app = express();
@@ -15,7 +15,7 @@ app.use(Cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//mongoose.connect(process.env.DATABASE).then(r => console.log("Conexión OK"));
+mongoose.connect(process.env.DATABASE).then(r => console.log("Conexión OK"));
 
 //Api end points
 app.get("/", (req, res) => res.status(200).send("Hello Cow Boys"));

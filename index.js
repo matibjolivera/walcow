@@ -13,9 +13,11 @@ const connection_url = process.env.DATABASE;
 app.use(express.json());
 app.use(Cors());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
-mongoose.connect(connection_url).then(() => console.log("Conexión OK")).catch(e => console.error(e));
+mongoose.connect(connection_url, {useNewUrlParser: true})
+    .then(() => console.log("Conexión OK"))
+    .catch(e => console.error(e));
 
 //Api end points
 app.get("/", (req, res) => res.status(200).send("Hello Cow Boys"));

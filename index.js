@@ -15,6 +15,8 @@ app.use(Cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+console.log("CONEXIÓN URL: " + connection_url);
+
 mongoose.connect(connection_url, {useNewUrlParser: true})
     .then(() => console.log("Conexión OK"))
     .catch(e => console.error(e));

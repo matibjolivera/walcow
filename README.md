@@ -43,7 +43,6 @@ npm start
 
 
 ## Endpoints
-- /api/users/
 
 - /api/users/login
 
@@ -55,6 +54,6 @@ npm start
 
 - /api/tokens/:code
 
-- /api/tokens/buy/:id
+- /api/tokens/buy/:code
 
-- /api/tokens/sell/:id
+- /api/tokens/sell/:code

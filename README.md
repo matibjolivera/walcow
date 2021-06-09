@@ -44,16 +44,16 @@ npm start
 
 ## Endpoints
 
-- /api/users/login
+- POST /api/users/login
 
-- /api/users/register
+- POST /api/users/register
 
-- /api/users/:id
+- GET /api/users/:id
 
-- /api/tokens/
+- GET /api/tokens/
 
-- /api/tokens/:code
+- GET /api/tokens/:code
 
-- /api/tokens/buy/:code
+- POST /api/tokens/buy/:code
 
-- /api/tokens/sell/:code
+- POST /api/tokens/sell/:code

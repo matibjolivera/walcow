@@ -54,6 +54,6 @@ npm start
 
 - GET /api/tokens/:code
 
-- POST /api/tokens/buy/:code
+- POST /api/tokens/buy
 
-- POST /api/tokens/sell/:code
+- POST /api/tokens/sell

@@ -8,7 +8,6 @@ require("dotenv").config();
 // App config
 const app = express();
 const port = process.env.PORT || 4000;
-const { DATABASE } = require("./config");
 
 const usersRouter = require("./routes/users");
 const tokensRouter = require("./routes/tokens");
@@ -23,7 +22,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/tokens", tokensRouter);
 
 mongoose
-  .connect(DATABASE, { useNewUrlParser: true })
+  .connect(process.env.DATABASE, { useNewUrlParser: true })
   .then((r) => console.log("Conexión OK"));
 
 //Listeners

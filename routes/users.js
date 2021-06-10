@@ -65,5 +65,28 @@ router.post("/login", async function (req, res) {
     }
   }
 });
-router.post("/deposit");
+router.patch("/deposit/:id", async function (req, res) {
+  const value = req.body.value;
+  console.log(value);
+  if (value && value > 0) {
+    try {
+      await User.updateOne(
+        {
+          _id: req.params.id,
+        },
+        {
+          $inc: {
+            fiat: value,
+          },
+        }
+      );
+    } catch (err) {
+      throw new Error(err);
+    }
+
+    res.send({ message: "Deposit finished", depositFinished: true });
+  } else {
+    res.send({ message: "Invalid Value", depositFinished: false });
+  }
+});
 module.exports = router;

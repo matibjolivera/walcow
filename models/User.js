@@ -15,5 +15,6 @@ module.exports = model(
     },
     created_at: { type: Date, default: Date.now },
     wallet: { type: Schema.Types.ObjectId, ref: "Wallet" },
+    fiat: { type: Number, default: Number(0) },
   })
 );

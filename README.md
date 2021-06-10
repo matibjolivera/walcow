@@ -57,3 +57,5 @@ npm start
 - POST /api/tokens/buy
 
 - POST /api/tokens/sell
+
+- GET /api/tokens/price/:id

@@ -6,7 +6,7 @@ const User = require("../models/User");
 /* GET users listing. */
 // api/users/
 router.get("/", async function (req, res) {
-  res.send(await User.find());
+  res.send({ nombre: "OK" });
 });
 router.post("/register", async function (req, res) {
   let user = new User({
@@ -46,28 +46,47 @@ router.post("/login", async function (req, res) {
     password: req.body.password,
   };
   if (user.password && user.username) {
-    try {
-      const userExist = User.find({
-        username: user.username,
-      });
-      if (userExist.length > 0) {
-        bcrypt.compare(
-          user.password,
-          userExist.password,
-          function (err, result) {
-            if (!err && result) {
-              res.send({ message: "User Login OK", canLogin: true });
-            } else {
-              res.send({ message: "Invalid credentials ", canLogin: false });
-            }
+    const userExist = await User.find({
+      username: user.username,
+    });
+    if (userExist.length > 0) {
+      console.log(userExist);
+      bcrypt.compare(
+        req.body.password,
+        userExist.password,
+        function (err, result) {
+          if (result) {
+            res.send("Correct");
+          } else {
+            res.send("Incorrect password");
           }
-        );
-      } else {
-        res.send({ message: "User not valid", canLogin: false });
-      }
+        }
+      );
+    }
+  }
+});
+router.patch("/deposit/:id", async function (req, res) {
+  const value = req.body.value;
+  console.log(value);
+  if (value && value > 0) {
+    try {
+      await User.updateOne(
+        {
+          _id: req.params.id,
+        },
+        {
+          $inc: {
+            fiat: value,
+          },
+        }
+      );
     } catch (err) {
       throw new Error(err);
     }
+
+    res.send({ message: "Deposit finished", depositFinished: true });
+  } else {
+    res.send({ message: "Invalid Value", depositFinished: false });
   }
 });
 module.exports = router;

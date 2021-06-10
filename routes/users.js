@@ -6,7 +6,7 @@ const User = require("../models/User");
 /* GET users listing. */
 // api/users/
 router.get("/", async function (req, res) {
-  res.send({ nombre: "asda" });
+  res.send(await User.find());
 });
 router.post("/register", async function (req, res) {
   let user = new User({

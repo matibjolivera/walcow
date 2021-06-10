@@ -6,7 +6,7 @@ const User = require("../models/User");
 /* GET users listing. */
 // api/users/
 router.get("/", async function (req, res) {
-  res.send({ nombre: "asda" });
+  res.send({ nombre: "OK" });
 });
 router.post("/register", async function (req, res) {
   let user = new User({
@@ -46,28 +46,24 @@ router.post("/login", async function (req, res) {
     password: req.body.password,
   };
   if (user.password && user.username) {
-    try {
-      const userExist = User.find({
-        username: user.username,
-      });
-      if (userExist.length > 0) {
-        bcrypt.compare(
-          user.password,
-          userExist.password,
-          function (err, result) {
-            if (!err && result) {
-              res.send({ message: "User Login OK", canLogin: true });
-            } else {
-              res.send({ message: "Invalid credentials ", canLogin: false });
-            }
+    const userExist = await User.find({
+      username: user.username,
+    });
+    if (userExist.length > 0) {
+      console.log(userExist);
+      bcrypt.compare(
+        req.body.password,
+        userExist.password,
+        function (err, result) {
+          if (result) {
+            res.send("Correct");
+          } else {
+            res.send("Incorrect password");
           }
-        );
-      } else {
-        res.send({ message: "User not valid", canLogin: false });
-      }
-    } catch (err) {
-      throw new Error(err);
+        }
+      );
     }
   }
 });
+router.post("/deposit");
 module.exports = router;

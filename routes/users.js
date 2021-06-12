@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 /* GET users listing. */
 // api/users/
@@ -22,15 +23,11 @@ router.post("/register", async function (req, res) {
         username: req.body.username,
         email: req.body.email,
       });
-      console.log(userExist.length);
       if (userExist.length === 0) {
-        bcrypt.hash(user.password, 8, async function (err, hash) {
-          if (!err) {
-            user.password = hash;
-            await user.save();
-          }
-        });
-
+        const salt = await bcrypt.genSalt();
+        const passwordHash = await bcrypt.hash(user.password, salt);
+        user.password = passwordHash;
+        await user.save();
         res.send({ message: "User Registered OK", canRegister: true });
       } else {
         res.send({ message: "User already exist", canRegister: false });
@@ -41,28 +38,34 @@ router.post("/register", async function (req, res) {
   }
 });
 router.post("/login", async function (req, res) {
-  let user = {
-    username: req.body.username,
-    password: req.body.password,
-  };
-  if (user.password && user.username) {
-    const userExist = await User.find({
-      username: user.username,
-    });
-    if (userExist.length > 0) {
-      console.log(userExist);
-      bcrypt.compare(
-        req.body.password,
-        userExist.password,
-        function (err, result) {
-          if (result) {
-            res.send("Correct");
-          } else {
-            res.send("Incorrect password");
+  try {
+    let user = {
+      username: req.body.username,
+      password: req.body.password,
+    };
+    if (user.password && user.username) {
+      const userExist = await User.find({
+        username: user.username,
+      });
+      if (userExist.length > 0) {
+        bcrypt.compare(
+          user.password,
+          userExist[0].password,
+          function (err, result) {
+            console.log(result);
+            if (!err) {
+              result
+                ? res.send({ message: "Login succes", canLogin: true })
+                : res.send({ message: "Invalid credentials", canLogin: false });
+            }
           }
-        }
-      );
+        );
+      } else {
+        return res.send({ message: "Invalid credentials", canLogin: false });
+      }
     }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 router.patch("/deposit/:id", async function (req, res) {

@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Wallet = require("../models/Wallet");
 /* GET users listing. */
 // api/users/
 router.get("/", async function (req, res) {
@@ -27,7 +28,13 @@ router.post("/register", async function (req, res) {
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(user.password, salt);
         user.password = passwordHash;
+        const wallet = new Wallet({
+          user: user,
+        });
+        user.wallet = wallet;
         await user.save();
+        await wallet.save();
+
         res.send({ message: "User Registered OK", canRegister: true });
       } else {
         res.send({ message: "User already exist", canRegister: false });

@@ -1,6 +1,8 @@
 # Descripción
 
-Walcow es una wallet de criptodivisas orientada a ser sencilla y facil de usar, el MVP contara con una autenticación de usuario segura y funcionalidades basicas.
+Walcow es una plataforma de exchange centralizado (CEX) de criptomonedas, orientada a ser sencilla y fácil de usar.
+
+El MVP contará con una autenticación de usuario segura y funcionalidades basicas de depósito/retiro y compra/venta.
 
 ## Funcionalidades
 

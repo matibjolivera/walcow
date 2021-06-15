@@ -1,6 +1,6 @@
 # Descripción
 
-Walcow es una plataforma de exchange centralizado (CEX) de criptomonedas, orientada a ser sencilla y fácil de usar.
+Walcow es una plataforma de exchange centralizada (CEX) de criptomonedas, orientada a ser sencilla y fácil de usar, en la que se provee a los usuarios de una wallet propia para operar.
 
 El MVP contará con una autenticación de usuario segura y funcionalidades basicas de depósito/retiro y compra/venta.
 

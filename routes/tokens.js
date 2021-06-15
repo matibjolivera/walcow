@@ -8,9 +8,11 @@ const API = 'https://api.coingecko.com/api/v3/';
 router.get("/", async function (req, res) {
   res.send(await Token.find());
 });
+
 router.get("/:code", async function (req, res) {
   res.send(await Token.find({ code: req.params.code }));
 });
+
 router.post("/", async function (req, res) {
   let token = new Token({
     code: req.body.code,
@@ -20,6 +22,7 @@ router.post("/", async function (req, res) {
   await token.save();
   res.send(token);
 });
+
 router.patch("/:code", async function (req, res) {
   if (!req.params.code) {
     res.status(400);

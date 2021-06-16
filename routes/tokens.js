@@ -73,11 +73,10 @@ router.post('/sell', async (req, res) => {
     let user = await User.findById(req.body.user);
     if (req.body.quantity > user.fiat) {
         res.status(500);
+        res.send(response(false, 'quantity to sell is bigger than user´s capital'));
     }
-})
 
-function hasFiatQuantity(user, quantity) {
-    return user.fiat >= quantity;
-}
+    let token = await Token.findOne({code: req.params.code});
+})
 
 module.exports = router;

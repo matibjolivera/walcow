@@ -6,7 +6,7 @@ const User = require("../models/User");
 
 const fetch = require("node-fetch");
 
-const {response} = require('../responses')
+const response = require('../responses')
 
 const API = 'https://api.coingecko.com/api/v3/';
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const Wallet = require("../models/Wallet");
-const {response} = require("../responses");
+const response = require("../responses");
 
 router.get("/", async function (req, res) {
     res.send(await User.find());
@@ -29,11 +29,10 @@ router.post("/register", async function (req, res) {
                 username: req.body.username,
                 email: req.body.email,
             });
-            if (!userExist) {
+            if (userExist.length === 0) {
                 const salt = await bcrypt.genSalt();
                 user.password = await bcrypt.hash(user.password, salt);
                 await user.save();
-                await wallet.save();
 
                 res.send({message: "User Registered OK", canRegister: true});
             } else {

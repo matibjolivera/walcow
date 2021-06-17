@@ -1,4 +1,4 @@
-const { model, Schema } = require("mongoose");
+const {model, Schema} = require("mongoose");
 const crypto = require("crypto");
 
 const Wallet = require("../models/Wallet");
@@ -23,14 +23,20 @@ const schema = new Schema({
 });
 
 schema.post('save', u => {
-    Token.find().map(async t => {
-        let w = await new Wallet({
-            user: new ObjectId(u._id),
-            token: new ObjectId(t._id),
-            quantity: 0
-        }).save()
-        u.wallets.push(new ObjectId(w._id))
-    })
+    if (u.wallets.length === 0) {
+        Token.find().exec((e, d) => {
+            d.forEach(async t => {
+                let w = await new Wallet({
+                    user: u._id,
+                    token: t._id,
+                    quantity: 0
+                })
+                await w.save()
+                u.wallets.push(w)
+                await u.save()
+            })
+        })
+    }
 });
 
 module.exports = model(

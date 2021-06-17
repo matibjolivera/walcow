@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Token = require("../models/Token");
 const User = require("../models/User");
+const Wallet = require("../models/Wallet");
 
 const fetch = require("node-fetch");
 
@@ -77,6 +78,21 @@ router.post('/sell', async (req, res) => {
     }
 
     let token = await Token.findOne({code: req.params.code});
+
+    await Wallet.findOneAndUpdate({
+            user: user._id,
+            token: token._id
+        },
+        {$inc: {'quantity': -req.body.quantity}}
+    ).exec((e, d) => {
+        if (e) {
+            res.status(500)
+            res.send(response(false, 'transaction can´t be possible'));
+        } else {
+            res.status(200)
+            res.send(response(true, 'transaction OK'));
+        }
+    })
 })
 
 module.exports = router;

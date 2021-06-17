@@ -84,43 +84,19 @@ router.post("/", async function (req, res) {
 
 router.post('/sell', async (req, res) => {
     await transactionStrategy('sell', async (user, token, quantity) => {
-        await Wallet.findOneAndUpdate({
-                user: user._id,
-                token: token._id
-            },
-            {$inc: {'quantity': -req.body.quantity}}
-        ).exec(async (e, d) => {
-            if (e) {
-                res.status(500)
-                res.send(response(false, 'transaction can´t be possible'));
-            } else {
-                user.fiat = user.fiat + quantity
-                await user.save()
-                res.status(200)
-                res.send(response(true, 'transaction OK'));
-            }
-        })
+        return {
+            quantity: -req.body.quantity,
+            fiat: user.fiat + quantity
+        }
     })
 })
 
 router.post('/buy', async (req, res) => {
     await transactionStrategy('buy', async (user, token, quantity) => {
-        await Wallet.findOneAndUpdate({
-                user: user._id,
-                token: token._id
-            },
-            {$inc: {'quantity': req.body.quantity}}
-        ).exec(async (e, d) => {
-            if (e) {
-                res.status(500)
-                res.send(response(false, 'transaction can´t be possible'));
-            } else {
-                user.fiat = user.fiat - quantity
-                await user.save()
-                res.status(200)
-                res.send(response(true, 'transaction OK'));
-            }
-        })
+        return {
+            quantity: req.body.quantity,
+            fiat: user.fiat - quantity
+        }
     }, req, res)
 })
 
@@ -140,7 +116,24 @@ async function transactionStrategy(name, strategy, req, res) {
     }
 
     let token = await Token.findOne({code: req.body.token})
-    strategy(user, token, quantity)
+    strategy(user, token, quantity).then(r => {
+        Wallet.findOneAndUpdate({
+                user: user._id,
+                token: token._id
+            },
+            {$inc: {'quantity': r.quantity}}
+        ).exec(async (e, d) => {
+            if (e) {
+                res.status(500)
+                res.send(response(false, 'transaction can´t be possible'));
+            } else {
+                user.fiat = r.fiat
+                await user.save()
+                res.status(200)
+                res.send(response(true, 'transaction OK'));
+            }
+        })
+    })
 }
 
 module.exports = router;

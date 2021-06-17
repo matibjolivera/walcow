@@ -17,24 +17,23 @@ const schema = new Schema({
         required: true,
         default: crypto.randomBytes(20).toString("hex"),
     },
-    wallet: [{type: Schema.Types.ObjectId, ref: "Wallet"}],
+    wallets: [{type: Schema.Types.ObjectId, ref: "Wallet"}],
     fiat: {type: Number, default: Number(0)},
     created_at: {type: Date, default: Date.now},
 });
 
-schema.post('save', function (u) {
+schema.post('save', u => {
     Token.find().map(async t => {
-        await new Wallet({
+        let w = await new Wallet({
             user: new ObjectId(u._id),
             token: new ObjectId(t._id),
             quantity: 0
         }).save()
+        u.wallets.push(new ObjectId(w._id))
     })
 });
 
-const User = model(
+module.exports = model(
     "User",
     schema
 );
-
-module.exports(User)

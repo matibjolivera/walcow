@@ -7,6 +7,8 @@ const User = require("../models/User");
 
 const ObjectId = require("mongoose").Types.ObjectId
 
+const response = require('../responses')
+
 /**
  * Getters Methods.
  *
@@ -80,5 +82,34 @@ router.post("/", async function (req, res) {
     res.send(newWallet);
 });
 
+router.post('/sell', async (req, res) => {
+    if (!req.body.token || !req.body.user || !req.body.price || !req.body.quantity) {
+        res.status(400);
+        res.send(response(false, '"token" & "user" & "price" & "quantity" must be sent'));
+    }
+
+    let user = await User.findById(req.body.user);
+    if (req.body.quantity > user.fiat) {
+        res.status(500);
+        res.send(response(false, 'quantity to sell is bigger than user´s capital'));
+    }
+
+    let token = await Token.findOne({code: req.params.code});
+
+    await Wallet.findOneAndUpdate({
+            user: user._id,
+            token: token._id
+        },
+        {$inc: {'quantity': -req.body.quantity}}
+    ).exec((e, d) => {
+        if (e) {
+            res.status(500)
+            res.send(response(false, 'transaction can´t be possible'));
+        } else {
+            res.status(200)
+            res.send(response(true, 'transaction OK'));
+        }
+    })
+})
 
 module.exports = router;

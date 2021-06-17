@@ -83,7 +83,7 @@ router.post("/", async function (req, res) {
 });
 
 router.post('/sell', async (req, res) => {
-    await transactionStrategy('sell', async (user, token, quantity) => {
+    await transaction('sell', async (user, quantity) => {
         return {
             quantity: -req.body.quantity,
             fiat: user.fiat + quantity
@@ -92,7 +92,7 @@ router.post('/sell', async (req, res) => {
 })
 
 router.post('/buy', async (req, res) => {
-    await transactionStrategy('buy', async (user, token, quantity) => {
+    await transaction('buy', async (user, quantity) => {
         return {
             quantity: req.body.quantity,
             fiat: user.fiat - quantity
@@ -100,7 +100,7 @@ router.post('/buy', async (req, res) => {
     }, req, res)
 })
 
-async function transactionStrategy(name, strategy, req, res) {
+async function transaction(name, strategy, req, res) {
     if (!req.body.token || !req.body.user || !req.body.price || !req.body.quantity) {
         res.status(400);
         res.send(response(false, '"token" & "user" & "price" & "quantity" must be sent'));
@@ -116,7 +116,7 @@ async function transactionStrategy(name, strategy, req, res) {
     }
 
     let token = await Token.findOne({code: req.body.token})
-    strategy(user, token, quantity).then(r => {
+    strategy(user, quantity).then(r => {
         Wallet.findOneAndUpdate({
                 user: user._id,
                 token: token._id

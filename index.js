@@ -19,7 +19,9 @@ app.use(Cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-await mongoose.connect(process.env.DATABASE, { useNewUrlParser: true })
+mongoose
+  .connect(process.env.DATABASE, { useNewUrlParser: true })
+  .then((r) => console.log("Conexión OK"));
 
 app.use("/api/users", usersRouter);
 app.use("/api/tokens", tokensRouter);

@@ -19,13 +19,11 @@ app.use(Cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+await mongoose.connect(process.env.DATABASE, { useNewUrlParser: true })
+
 app.use("/api/users", usersRouter);
 app.use("/api/tokens", tokensRouter);
 app.use("/api/wallets", walletRouter);
-
-mongoose
-  .connect(process.env.DATABASE, { useNewUrlParser: true })
-  .then((r) => console.log("Conexión OK"));
 
 //Listeners
 app.listen(port, () => console.log(`listening on port ${port}`));

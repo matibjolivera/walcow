@@ -139,6 +139,7 @@ router.post("/changePassword", async (req, res) => {
   }
 });
 router.patch("/deposit/:username", validateToken, async function (req, res) {
+  //Falta validar que el token sea del usuario
   const value = req.body.value;
   if (value && value > 0) {
     try {

@@ -7,7 +7,7 @@ const generateAccessToken = (user) => {
     token_created: Date.now(),
   };
   return jwt.sign(generateObj, process.env.TOKEN_SECRET, {
-    expiresIn: "1m",
+    expiresIn: "15m",
   });
 };
 module.exports = generateAccessToken;

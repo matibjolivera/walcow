@@ -52,8 +52,8 @@ router.get('/price/:id', async (req, res) => {
         res.send('"id" must be sent');
     }
 
-    let response = await fetch(`${API}coins/${req.params.id}`)
-    let json = await response.json();
+    let result = await fetch(`${API}coins/${req.params.id}`)
+    let json = await result.json();
 
     res.send(response(true, {
         token: {

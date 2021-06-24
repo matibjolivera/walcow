@@ -1,9 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+
 const User = require("../models/User");
 const Wallet = require("../models/Wallet");
+
 const response = require("../responses");
+const validateToken = require("../utils/validate-token");
+const generateAccessToken = require("../utils/generateAccessToken");
 
 router.get("/", async function (req, res) {
   res.send(await User.find());
@@ -43,9 +47,19 @@ router.post("/register", async function (req, res) {
       if (userExist.length === 0) {
         const salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(user.password, salt);
+        user.token = generateAccessToken(user);
         await user.save();
-
-        res.send({ message: "User Registered OK", canRegister: true });
+        res.json({
+          user: {
+            username: user.username,
+            email: user.email,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            token: user.token,
+          },
+          message: "Registration success",
+          success: true,
+        });
       } else {
         res.send({ message: "User already exist", canRegister: false });
       }
@@ -71,15 +85,30 @@ router.post("/login", async function (req, res) {
           function (err, result) {
             console.log(result);
             if (!err) {
-              result
-                ? res.send({ message: "Login succes", canLogin: true })
-                : res.send({ message: "Invalid credentials", canLogin: false });
+              if (result) {
+                console.log(generateAccessToken(userExist[0]));
+                res.json({
+                  user: {
+                    username: userExist[0].username,
+                    email: userExist[0].email,
+                    firstname: userExist[0].firstname,
+                    lastname: userExist[0].lastname,
+                    token: userExist[0].token,
+                  },
+                  message: "Login success",
+                  success: true,
+                });
+              } else {
+                res.send({ message: "Invalid credentials", canLogin: false });
+              }
             }
           }
         );
       } else {
         return res.send({ message: "Invalid credentials", canLogin: false });
       }
+    } else {
+      res.send({ message: "Invalid credentials", canLogin: false });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -109,14 +138,13 @@ router.post("/changePassword", async (req, res) => {
     throw new Error(err);
   }
 });
-router.patch("/deposit/:id", async function (req, res) {
+router.patch("/deposit/:username", validateToken, async function (req, res) {
   const value = req.body.value;
-  console.log(value);
   if (value && value > 0) {
     try {
       await User.updateOne(
         {
-          _id: req.params.id,
+          username: req.params.username,
         },
         {
           $inc: {
@@ -133,4 +161,5 @@ router.patch("/deposit/:id", async function (req, res) {
     res.send({ message: "Invalid Value", depositFinished: false });
   }
 });
+
 module.exports = router;

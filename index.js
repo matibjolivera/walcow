@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 const mongoose = require("mongoose");
 const Cors = require("cors");
 const bodyParser = require("body-parser");
@@ -14,7 +15,7 @@ const tokensRouter = require("./routes/tokens");
 const walletRouter = require("./routes/wallets");
 
 //HOME
-express.get("/", async function (req, res) {
+router.get("/", async function (req, res) {
   res.send("OK");
 });
 //Middlewares

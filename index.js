@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Cors = require("cors");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 
 require("dotenv").config();
@@ -15,7 +15,9 @@ const walletRouter = require("./routes/wallets");
 
 //Middlewares
 app.use(express.json());
-app.use(Cors());
+app.use(cors({
+  origin: '*'
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

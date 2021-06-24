@@ -13,6 +13,10 @@ const usersRouter = require("./routes/users");
 const tokensRouter = require("./routes/tokens");
 const walletRouter = require("./routes/wallets");
 
+//HOME
+express.get("/", async function (req, res) {
+  res.send("OK");
+});
 //Middlewares
 app.use(express.json());
 app.use(Cors());

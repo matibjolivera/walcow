@@ -1,6 +1,4 @@
-var express = require("express");
-var app = express();
-const router = express.Router();
+const express = require("express");
 const mongoose = require("mongoose");
 const Cors = require("cors");
 const bodyParser = require("body-parser");
@@ -15,10 +13,6 @@ const usersRouter = require("./routes/users");
 const tokensRouter = require("./routes/tokens");
 const walletRouter = require("./routes/wallets");
 
-//HOME
-app.get("/", function (req, res) {
-  res.send("hello world");
-});
 //Middlewares
 app.use(express.json());
 app.use(Cors());
@@ -29,6 +23,9 @@ mongoose
   .connect(process.env.DATABASE, { useNewUrlParser: true })
   .then((r) => console.log("Conexión OK"));
 
+app.use("/", async function (req, res) {
+  res.send("OK");
+});
 app.use("/api/users", usersRouter);
 app.use("/api/tokens", tokensRouter);
 app.use("/api/wallets", walletRouter);

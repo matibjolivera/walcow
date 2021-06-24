@@ -1,4 +1,5 @@
-const express = require("express");
+var express = require("express");
+var app = express();
 const router = express.Router();
 const mongoose = require("mongoose");
 const Cors = require("cors");
@@ -15,8 +16,8 @@ const tokensRouter = require("./routes/tokens");
 const walletRouter = require("./routes/wallets");
 
 //HOME
-router.get("/", async function (req, res) {
-  res.send("OK");
+app.get("/", function (req, res) {
+  res.send("hello world");
 });
 //Middlewares
 app.use(express.json());

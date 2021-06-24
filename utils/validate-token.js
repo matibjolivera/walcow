@@ -7,7 +7,6 @@ const verifyToken = (req, res, next) => {
   try {
     console.log("ok");
     const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-    console.log(verified);
     req.user = verified;
     next(); // continuamos
   } catch (error) {

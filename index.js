@@ -23,7 +23,7 @@ mongoose
   .connect(process.env.DATABASE, { useNewUrlParser: true })
   .then((r) => console.log("Conexión OK"));
 
-app.use("/", async function (req, res) {
+express.Router().get("/", async function (req, res) {
   res.send("OK");
 });
 app.use("/api/users", usersRouter);

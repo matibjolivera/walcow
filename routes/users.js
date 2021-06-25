@@ -137,30 +137,34 @@ router.post("/changePassword", async (req, res) => {
         throw new Error(err);
     }
 });
-router.patch("/deposit/:username", validateToken, async function (req, res) {
-    //Falta validar que el token sea del usuario
-    const value = req.body.value;
-    if (value && value > 0) {
-        try {
-            await User.updateOne(
-                {
-                    username: req.params.username,
-                },
-                {
-                    $inc: {
-                        fiat: value,
-                    },
-                }
-            );
-        } catch (err) {
-            throw new Error(err);
-        }
-
-        res.send({message: "Deposit finished", depositFinished: true});
-    } else {
-        res.send({message: "Invalid Value", depositFinished: false});
+router.patch("/deposit/", validateToken, async function (req, res) {
+  //Falta validar que el token sea del usuario
+  const value = req.body.value;
+  if (value && value > 0) {
+    try {
+      const user = await User.find({ token: req.header("auth-token") });
+      if (user.length > 0) {
+        await User.updateOne(
+          {
+            token: req.header("auth-token"),
+          },
+          {
+            $inc: {
+              fiat: value,
+            },
+          }
+        );
+      }
+    } catch (err) {
+      throw new Error(err);
     }
+
+    res.send({ message: "Deposit finished", depositFinished: true });
+  } else {
+    res.send({ message: "Invalid Value", depositFinished: false });
+  }
 });
+
 router.post("/data", async function (req, res) {
     try {
         let user = {

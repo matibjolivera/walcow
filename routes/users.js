@@ -167,12 +167,9 @@ router.patch("/deposit/", validateToken, async function (req, res) {
 
 router.post("/data", async function (req, res) {
     try {
-        let user = {
-            token: req.body.token,
-        };
-        if (user.token) {
+        if (req.body.token) {
             const userExist = await User.findOne({
-                token: user.token,
+                token: req.body.token,
             });
             if (userExist.length > 0) {
                 res.json({

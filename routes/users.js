@@ -171,7 +171,7 @@ router.post("/data", async function (req, res) {
             const userExist = await User.findOne({
                 token: req.body.token,
             });
-            if (userExist.length > 0) {
+            if (userExist) {
                 res.json({
                     message: {
                         username: userExist.username,

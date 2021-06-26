@@ -1,24 +1,6 @@
-const response = require('responses')
-const Wallet = require('models/Wallet')
-const User = require('models/User')
-
-module.exports.sell = async (req, res) => {
-    await transaction('sell', async (user, quantity) => {
-        return {
-            quantity: -req.body.quantity,
-            fiat: user.fiat + quantity
-        }
-    }, req, res)
-}
-
-module.exports.buy = async (req, res) => {
-    await transaction('buy', async (user, quantity) => {
-        return {
-            quantity: req.body.quantity,
-            fiat: user.fiat - quantity
-        }
-    }, req, res)
-}
+const response = require('./responses')
+const Wallet = require('./models/Wallet')
+const User = require('./models/User')
 
 async function transaction(name, strategy, req, res) {
     if (!req.body.token || !req.body.user || !req.body.price || !req.body.quantity) {
@@ -53,4 +35,22 @@ async function transaction(name, strategy, req, res) {
             }
         })
     })
+}
+
+module.exports.sell = async (req, res) => {
+    await transaction('sell', async (user, quantity) => {
+        return {
+            quantity: -req.body.quantity,
+            fiat: user.fiat + quantity
+        }
+    }, req, res)
+}
+
+module.exports.buy = async (req, res) => {
+    await transaction('buy', async (user, quantity) => {
+        return {
+            quantity: req.body.quantity,
+            fiat: user.fiat - quantity
+        }
+    }, req, res)
 }

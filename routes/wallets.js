@@ -5,8 +5,6 @@ const Wallet = require("../models/Wallet");
 const User = require("../models/User");
 
 const ObjectId = require("mongoose").Types.ObjectId
-
-const response = require('../responses')
 const transactions = require('../transactions')
 
 router.get("/", async (req, res) => {

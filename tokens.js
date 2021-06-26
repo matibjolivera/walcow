@@ -37,7 +37,6 @@ module.exports.getToken = async (code) => {
 module.exports.getPrice = async (code) => {
     let t = await this.getToken(code)
     return {
-        code: t.id,
         price: t.market_data.current_price.usd
     }
 }

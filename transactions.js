@@ -2,16 +2,16 @@ const response = require('responses')
 const Wallet = require('models/Wallet')
 const User = require('models/User')
 
-module.exports.sell = async (req) => {
+module.exports.sell = async (req, res) => {
     await transaction('sell', async (user, quantity) => {
         return {
             quantity: -req.body.quantity,
             fiat: user.fiat + quantity
         }
-    })
+    }, req, res)
 }
 
-module.exports.buy = async (req) => {
+module.exports.buy = async (req, res) => {
     await transaction('buy', async (user, quantity) => {
         return {
             quantity: req.body.quantity,

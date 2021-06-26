@@ -59,11 +59,11 @@ router.post("/", async function (req, res) {
 });
 
 router.post('/sell', (req, res) => {
-    transactions.sell(req, res).then(() => response(true, {}))
+    transactions.sell(req, res)
 })
 
 router.post('/buy', (req, res) => {
-    transactions.buy(req).then(() => response(true, {}))
+    transactions.buy(req, res)
 })
 
 module.exports = router;

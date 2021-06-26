@@ -1,3 +1,5 @@
+const fetch = require("node-fetch");
+
 const API_URL = 'https://api.coingecko.com/api/v3';
 
 module.exports.getTokens = async () => {

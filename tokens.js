@@ -2,10 +2,22 @@ const fetch = require("node-fetch");
 
 const API_URL = 'https://api.coingecko.com/api/v3';
 
+async function request(resource, method, body) {
+    let options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+    if (body) {
+        options.body = body
+    }
+    let res = await fetch(`${API_URL}/${resource}`, options)
+    return res.json()
+}
+
 module.exports.getTokens = async () => {
-    let response = await fetch(`${API_URL}/coins`)
-    await console.log(response.json())
-    return response.json()
+    return await request('coins')
 }
 
 module.exports.getPrices = async () => {
@@ -19,8 +31,7 @@ module.exports.getPrices = async () => {
 }
 
 module.exports.getToken = async (code) => {
-    let response = await fetch(`${API_URL}/coins/${code}`)
-    return response.json()
+    return await request(`/coins/${code}`)
 }
 
 module.exports.getPrice = async (code) => {

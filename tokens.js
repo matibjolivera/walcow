@@ -16,8 +16,8 @@ async function request(resource, method, body) {
     return res.json()
 }
 
-module.exports.getTokens = async () => {
-    return await request('coins')
+module.exports.getTokens = () => {
+    return request('coins')
 }
 
 module.exports.getPrices = async () => {
@@ -30,8 +30,8 @@ module.exports.getPrices = async () => {
     })
 }
 
-module.exports.getToken = async (code) => {
-    return await request(`/coins/${code}`)
+module.exports.getToken = (code) => {
+    return request(`/coins/${code}`)
 }
 
 module.exports.getPrice = async (code) => {

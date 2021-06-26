@@ -2,6 +2,7 @@ const API_URL = 'https://api.coingecko.com/api/v3';
 
 module.exports.getTokens = async () => {
     let response = await fetch(`${API_URL}/coins`)
+    await console.log(response.json())
     return response.json()
 }
 

@@ -5,7 +5,7 @@ const response = require('../responses')
 const tokens = require('../tokens')
 
 router.get("/", async function (req, res) {
-    res.send(await tokens.getTokens);
+    res.send(await tokens.getTokens());
 });
 
 router.get("/:code", async function (req, res) {

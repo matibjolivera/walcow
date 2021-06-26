@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-const Token = require("../models/Token");
 const Wallet = require("../models/Wallet");
 const User = require("../models/User");
 
@@ -32,17 +31,6 @@ router.post("/", async function (req, res) {
         return res.status(400).send({
             error: true
             , message: "Mandatory fields was not found in body"
-        });
-    }
-
-    let token = await Token.findOne({
-        code: req.body.token
-    });
-
-    if (token) {
-        return res.status(404).send({
-            error: true
-            , message: 'Token not found.'
         });
     }
 
@@ -115,11 +103,10 @@ async function transaction(name, strategy, req, res) {
         res.send(response(false, 'quantity to ' + name + ' is bigger than user´s capital'))
     }
 
-    let token = await Token.findOne({code: req.body.token})
     strategy(user, quantity).then(r => {
         Wallet.findOneAndUpdate({
                 user: user._id,
-                token: token._id
+                token: req.body.token
             },
             {$inc: {'quantity': r.quantity}}
         ).exec(async (e, d) => {

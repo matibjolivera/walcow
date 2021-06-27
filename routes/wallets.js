@@ -10,9 +10,10 @@ const response = require("../responses");
 
 router.get("/", async (req, res) => {
     try {
-        if (req.body.token) {
+        const token = req.header("auth-token");
+        if (token) {
             const userExist = await User.findOne({
-                token: req.body.token,
+                token: token,
             });
             if (userExist) {
                 let wallets = await Wallet

@@ -33,14 +33,11 @@ schema.post("save", (u) => {
     }
 });
 
-module.exports.login = (password, user) => {
-    return bcrypt.compare(password, user.password, (e, r) => {
-            return !e && r;
-        }
-    );
+schema.statics.login = async (password, userPassword) => {
+    return await bcrypt.compare(password, userPassword)
 }
 
-module.exports.toJSON = (user) => {
+schema.statics.toJSON = (user) => {
     return {
         username: user.username,
         email: user.email,

@@ -183,15 +183,7 @@ router.post("/data", async function (req, res) {
         token: req.body.token,
       });
       if (userExist) {
-        res.json({
-          message: {
-            username: userExist.username,
-            email: userExist.email,
-            firstname: userExist.firstname,
-            lastname: userExist.lastname,
-          },
-          success: true,
-        });
+        res.send(response(true, User.toJSON(userExist)))
       } else {
         return res.send({ message: "Invalid token", canLogin: false });
       }

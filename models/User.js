@@ -1,4 +1,5 @@
 const {model, Schema} = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const Wallet = require("../models/Wallet");
 const {getTokens} = require('../tokens')
@@ -31,5 +32,19 @@ schema.post("save", (u) => {
         })
     }
 });
+
+schema.statics.login = async (password, userPassword) => {
+    return await bcrypt.compare(password, userPassword)
+}
+
+schema.statics.toJSON = (user) => {
+    return {
+        username: user.username,
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        token: user.token,
+    }
+}
 
 module.exports = model("User", schema);

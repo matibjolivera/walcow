@@ -10,7 +10,6 @@ const verifyToken = (req, res, next) => {
     req.user = verified;
     next(); // continuamos
   } catch (error) {
-    res.send(error);
     res.status(400).json({ error: error.message });
   }
 };

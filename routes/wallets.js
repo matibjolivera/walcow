@@ -7,30 +7,55 @@ const User = require("../models/User");
 const ObjectId = require("mongoose").Types.ObjectId
 const transactions = require('../transactions')
 const response = require("../responses");
+const validateToken = require("../utils/validate-token");
+const tokens = require("../tokens")
 
-router.get("/", async (req, res) => {
+router.get("/", validateToken, async (req, res) => {
     try {
         const token = req.header("auth-token");
-        if (token) {
-            const userExist = await User.findOne({
-                token: token,
-            });
-            if (userExist) {
-                let wallets = await Wallet
-                    .find({user: userExist._id})
-                    .where('quantity').gt(0)
-                    .sort('-quantity')
-                res.json(response(true, wallets));
-            } else {
-                return res.send({message: "Invalid token", canLogin: false});
-            }
+        const userExist = await User.findOne({
+            token: token,
+        });
+        if (userExist) {
+            let wallets = await Wallet
+                .find({user: userExist._id})
+                .where('quantity').gt(0)
+                .sort('-quantity')
+            res.json(response(true, wallets));
         } else {
-            res.send({message: "'token' must be sent", canLogin: false});
+            return res.send({message: "Invalid token", canLogin: false});
         }
     } catch (error) {
         res.status(500).json({error: error.message});
     }
-});
+})
+
+router.get("/total", validateToken, async (req, res) => {
+    try {
+        const token = req.header("auth-token");
+        const userExist = await User.findOne({
+            token: token,
+        });
+        if (userExist) {
+            let wallets = await Wallet
+                .find({user: userExist._id})
+                .where('quantity').gt(0)
+                .sort('-quantity')
+
+            let total = 0
+            for (const w of wallets) {
+                const t = await tokens.getPrice(w.token)
+                total += w.quantity * t.price
+            }
+
+            res.send(response(true, total));
+        } else {
+            return res.send({message: "Invalid token", canLogin: false});
+        }
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+})
 
 router.post("/", async function (req, res) {
 

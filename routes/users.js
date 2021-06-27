@@ -69,40 +69,16 @@ router.post("/register", async function (req, res) {
 });
 router.post("/login", async function (req, res) {
     try {
-        let user = {
+        let credentials = {
             username: req.body.username,
             password: req.body.password,
         };
-        if (user.password && user.username) {
-            const userExist = await User.find({
-                username: user.username,
+        if (credentials.password && credentials.username) {
+            const user = await User.find({
+                username: credentials.username,
             });
-            if (userExist.length > 0) {
-                bcrypt.compare(
-                    user.password,
-                    userExist[0].password,
-                    function (err, result) {
-                        console.log(result);
-                        if (!err) {
-                            if (result) {
-                                console.log(generateAccessToken(userExist[0]));
-                                res.json({
-                                    user: {
-                                        username: userExist[0].username,
-                                        email: userExist[0].email,
-                                        firstname: userExist[0].firstname,
-                                        lastname: userExist[0].lastname,
-                                        token: userExist[0].token,
-                                    },
-                                    message: "Login success",
-                                    success: true,
-                                });
-                            } else {
-                                res.send({message: "Invalid credentials", canLogin: false});
-                            }
-                        }
-                    }
-                );
+            if (user.length > 0 && User.login(credentials.password, user)) {
+                return User.toJSON(user)
             } else {
                 return res.send({message: "Invalid credentials", canLogin: false});
             }
@@ -137,32 +113,33 @@ router.post("/changePassword", async (req, res) => {
         throw new Error(err);
     }
 });
-router.patch("/deposit/", validateToken, async function (req, res) {
-  //Falta validar que el token sea del usuario
-  const value = req.body.value;
-  if (value && value > 0) {
-    try {
-      const user = await User.find({ token: req.header("auth-token") });
-      if (user.length > 0) {
-        await User.updateOne(
-          {
-            token: req.header("auth-token"),
-          },
-          {
-            $inc: {
-              fiat: value,
-            },
-          }
-        );
-      }
-    } catch (err) {
-      throw new Error(err);
-    }
 
-    res.send({ message: "Deposit finished", depositFinished: true });
-  } else {
-    res.send({ message: "Invalid Value", depositFinished: false });
-  }
+router.patch("/deposit/", validateToken, async function (req, res) {
+    //Falta validar que el token sea del usuario
+    const value = req.body.value;
+    if (value && value > 0) {
+        try {
+            const user = await User.find({token: req.header("auth-token")});
+            if (user.length > 0) {
+                await User.updateOne(
+                    {
+                        token: req.header("auth-token"),
+                    },
+                    {
+                        $inc: {
+                            fiat: value,
+                        },
+                    }
+                );
+            }
+        } catch (err) {
+            throw new Error(err);
+        }
+
+        res.send({message: "Deposit finished", depositFinished: true});
+    } else {
+        res.send({message: "Invalid Value", depositFinished: false});
+    }
 });
 
 router.post("/data", async function (req, res) {

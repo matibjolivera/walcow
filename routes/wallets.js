@@ -10,7 +10,7 @@ const response = require("../responses");
 const validateToken = require("../utils/validate-token");
 const tokens = require("../tokens")
 
-router.get("/", validateToken, async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const token = req.header("auth-token");
         const userExist = await User.findOne({
@@ -30,7 +30,7 @@ router.get("/", validateToken, async (req, res) => {
     }
 })
 
-router.get("/total", validateToken, async (req, res) => {
+router.get("/total", async (req, res) => {
     try {
         const token = req.header("auth-token");
         const userExist = await User.findOne({

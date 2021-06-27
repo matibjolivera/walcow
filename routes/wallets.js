@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
                 let wallets = await Wallet
                     .find({user: userExist._id})
                     .where('quantity').gt(0)
-                    .sort('quantity')
+                    .sort('-quantity')
                 res.json(response(true, wallets));
             } else {
                 return res.send({message: "Invalid token", canLogin: false});

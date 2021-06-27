@@ -67,6 +67,7 @@ router.post("/register", async function (req, res) {
         }
     }
 });
+
 router.post("/login", async function (req, res) {
     try {
         let credentials = {
@@ -80,7 +81,6 @@ router.post("/login", async function (req, res) {
             if (user && User.login(credentials.password, user.password)) {
                 res.send(response(true, User.toJSON(user)))
             } else {
-                console.log('ERROR 1')
                 res.send(response(false, "Invalid credentials"))
             }
         } else {
@@ -90,6 +90,7 @@ router.post("/login", async function (req, res) {
         res.status(500).json({error: error.message});
     }
 });
+
 router.post("/changePassword", async (req, res) => {
     try {
         const {username, newPassword} = req.body;
@@ -150,15 +151,7 @@ router.post("/data", async function (req, res) {
                 token: req.body.token,
             });
             if (userExist) {
-                res.json({
-                    message: {
-                        username: userExist.username,
-                        email: userExist.email,
-                        firstname: userExist.firstname,
-                        lastname: userExist.lastname,
-                    },
-                    success: true,
-                });
+                res.json(response(true, User.toJSON(userExist)));
             } else {
                 return res.send({message: "Invalid token", canLogin: false});
             }

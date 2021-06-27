@@ -74,16 +74,17 @@ router.post("/login", async function (req, res) {
             password: req.body.password,
         };
         if (credentials.password && credentials.username) {
-            const user = await User.find({
+            const user = await User.findOne({
                 username: credentials.username,
             });
-            if (user.length > 0 && User.login(credentials.password, user)) {
-                return User.toJSON(user)
+            if (user && User.login(credentials.password, user.password)) {
+                res.send(response(true, User.toJSON(user)))
             } else {
-                return res.send({message: "Invalid credentials", canLogin: false});
+                console.log('ERROR 1')
+                res.send(response(false, "Invalid credentials"))
             }
         } else {
-            res.send({message: "Invalid credentials", canLogin: false});
+            res.send(response(false, "You must sent username & password"))
         }
     } catch (error) {
         res.status(500).json({error: error.message});

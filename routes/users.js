@@ -10,8 +10,6 @@ const response = require("../responses");
 const validateToken = require("../utils/validate-token");
 const generateAccessToken = require("../utils/generateAccessToken");
 
-
-
 router.get("/", async function (req, res) {
     res.send(await User.find());
 });

@@ -6,9 +6,29 @@ const User = require("../models/User");
 
 const ObjectId = require("mongoose").Types.ObjectId
 const transactions = require('../transactions')
+const response = require("../responses");
 
 router.get("/", async (req, res) => {
-    res.send(await Wallet.find());
+    try {
+        if (req.body.token) {
+            const userExist = await User.findOne({
+                token: req.body.token,
+            });
+            if (userExist) {
+                let wallets = await Wallet
+                    .find({user: userExist._id})
+                    .where('quantity').gt(0)
+                    .sort('quantity')
+                res.json(response(true, wallets));
+            } else {
+                return res.send({message: "Invalid token", canLogin: false});
+            }
+        } else {
+            res.send({message: "'token' must be sent", canLogin: false});
+        }
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
 });
 
 router.post("/", async function (req, res) {

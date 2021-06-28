@@ -9,6 +9,8 @@ const User = require("../models/User");
 const response = require("../responses");
 const validateToken = require("../utils/validate-token");
 const generateAccessToken = require("../utils/generateAccessToken");
+const generateConfirmationHtml = require("../utils/generateConfirmationHtml");
+
 
 router.get("/", async function (req, res) {
     res.send(await User.find());
@@ -43,35 +45,59 @@ router.post("/register", async function (req, res) {
         lastname: req.body.lastname,
     });
 
-    if (user) {
-        try {
-            const userExist = await User.find({
-                username: req.body.username,
-                email: req.body.email,
-            });
-            if (userExist.length === 0) {
-                const salt = await bcrypt.genSalt();
-                user.password = await bcrypt.hash(user.password, salt);
-                user.token = generateAccessToken(user);
-                await user.save();
-                res.json({
-                    user: {
-                        username: user.username,
-                        email: user.email,
-                        firstname: user.firstname,
-                        lastname: user.lastname,
-                        token: user.token,
-                    },
-                    message: "Registration success",
-                    success: true,
-                });
-            } else {
-                res.send({message: "User already exist", canRegister: false});
-            }
-        } catch (err) {
-            throw new Error(err);
+  if (user) {
+    try {
+      const userExist = await User.find({
+        username: req.body.username,
+        email: req.body.email,
+      });
+      if (userExist.length === 0) {
+        const salt = await bcrypt.genSalt();
+        user.password = await bcrypt.hash(user.password, salt);
+        user.token = generateAccessToken(user);
+
+        var mailgun = new Mailgun({
+          apiKey: process.env.MAILGUN_API_KEY,
+          domain: process.env.MAILGUN_DOMAIN,
+        });
+
+        let link = `${process.env.FRONT_URL}/access/confirm-email/${user.token}`;
+
+        let data = {
+          //Specify email data
+          from: "no-reply@walcow.com",
+          //The email to contact
+          to: user.email,
+          //Subject and text data
+          subject: "WALCOW EMAIL CONFIRMATION",
+          html: generateConfirmationHtml(link),
+        };
+
+        if (!process.env.AVOID_EMAIL) {
+          await mailgun.messages().send(data);
         }
+
+
+        await user.save();
+
+        res.json({
+          user: {
+            username: user.username,
+            email: user.email,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            token: user.token,
+          },
+          message: "Registration success",
+          success: true,
+        });
+      } else {
+        res.send({ message: "User already exist", canRegister: false });
+      }
+    } catch (err) {
+      throw new Error(err);
     }
+  }
 });
 
 router.post("/login", async function (req, res) {
@@ -85,7 +111,7 @@ router.post("/login", async function (req, res) {
                 username: credentials.username,
             });
             if (user && User.login(credentials.password, user.password)) {
-                res.send(response(true, User.toJSON(user)));
+                res.send(response(user.confirmedEmail, User.toJSON(user)));
             } else {
                 res.send(response(false, "Invalid credentials"));
             }
@@ -187,7 +213,7 @@ router.post("/data", async function (req, res) {
                 token: req.body.token,
             });
             if (userExist) {
-                res.send(response(true, User.toJSON(userExist)))
+                res.send(response(true, User.toJSON(userExist)));
             } else {
                 return res.send({message: "Invalid token", canLogin: false});
             }
@@ -229,8 +255,8 @@ router.post("/otp", async function (req, res) {
     try {
         if (userExist) {
             mailSended = true;
-            let dataSend = await mailgun.messages().send(data);
-        }
+            if (!process.env.AVOID_EMAIL) { await mailgun.messages().send(data);
+        }}
 
         res.status(200).json({
             emailSended: mailSended,
@@ -240,6 +266,23 @@ router.post("/otp", async function (req, res) {
     } catch (error) {
         res.status(500).json({error: error.message});
     }
+});
+
+router.patch("/validate-email", validateToken, async function (req, res) {
+  const user = await User.findOne({ token: req.header("auth-token") });
+
+  if (user) {
+    user.confirmedEmail = true;
+
+    try {
+      await user.save();
+      res.status(200).json(response(true, User.toJSON(user)));
+    } catch (err) {
+      res.status(500).json(response(false, err));
+    }
+  } else {
+    res.status(404).json({ success: false, message: "User not found" });
+  }
 });
 
 module.exports = router;

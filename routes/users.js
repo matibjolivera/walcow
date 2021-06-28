@@ -70,7 +70,13 @@ router.post("/register", async function (req, res) {
         };
 
         if (!process.env.AVOID_EMAIL) {
-            await mailgun.messages().send(data);
+
+            try {
+                await mailgun.messages().send(data);
+            } catch(err){
+                //TODO: Handle when mailgun send an error
+                console.log('Cannot send email: ', err);
+            }
         }
 
         await user.save();

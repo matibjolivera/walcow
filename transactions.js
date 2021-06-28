@@ -52,9 +52,11 @@ module.exports.sell = async (req, res) => {
   await transaction(
     "sell",
     async (user, quantity, amount) => {
+      console.log("fiat: " + user.fiat)
+      console.log("amount: " + amount)
       return {
         quantity: -quantity,
-        fiat: user.fiat + amount,
+        fiat: user.fiat + parseFloat(amount),
       };
     },
     req,
@@ -68,7 +70,7 @@ module.exports.buy = async (req, res) => {
     async (user, quantity, amount) => {
       return {
         quantity: quantity,
-        fiat: user.fiat - amount,
+        fiat: user.fiat - parseFloat(amount),
       };
     },
     req,

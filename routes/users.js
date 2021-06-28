@@ -52,7 +52,7 @@ router.post("/register", async function (req, res) {
         user.password = await bcrypt.hash(user.password, salt);
         user.token = generateAccessToken(user);
 
-        /*var mailgun = new Mailgun({
+        var mailgun = new Mailgun({
           apiKey: process.env.MAILGUN_API_KEY,
           domain: process.env.MAILGUN_DOMAIN,
         });
@@ -70,8 +70,8 @@ router.post("/register", async function (req, res) {
         };
 
         if (!process.env.AVOID_EMAIL) {
-          await mailgun.messages().send(data);
-        }*/
+            mailgun.messages().send(data);
+        }
 
         await user.save();
 

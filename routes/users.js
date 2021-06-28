@@ -106,7 +106,7 @@ router.post("/login", async function (req, res) {
                 username: credentials.username,
             });
             if (user && User.login(credentials.password, user.password)) {
-                res.send(response(user.confirmedEmail, User.toJSON(user)));
+                res.send(response(true, User.toJSON(user)));
             } else {
                 res.send(response(false, "Invalid credentials"));
             }

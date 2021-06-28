@@ -19,7 +19,7 @@ const schema = new Schema({
 
 schema.post("save", (u) => {
     if (u.wallets.length === 0) {
-        getTokens().then(r => {
+        getTokens().then( async (r) => {
             r.forEach(async (t) => {
                 let w = await new Wallet({
                     user: u._id,

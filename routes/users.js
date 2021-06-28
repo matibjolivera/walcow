@@ -112,9 +112,9 @@ router.post("/login", async function (req, res) {
                 username: credentials.username,
             });
             if (user && User.login(credentials.password, user.password)) {
-                res.send(response(true, User.toJSON(user)));
+                res.send(response(user.confirmedEmail, User.toJSON(user)));
             } else {
-                res.send(response(user.confirmedEmail, "Invalid credentials"));
+                res.send(response(false, "Invalid credentials"));
             }
         } else {
             res.send(response(false, "You must sent username & password"));

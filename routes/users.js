@@ -9,6 +9,8 @@ const User = require("../models/User");
 const response = require("../responses");
 const validateToken = require("../utils/validate-token");
 const generateAccessToken = require("../utils/generateAccessToken");
+const generateConfirmationHtml = require("../utils/generateConfirmationHtml");
+
 
 router.get("/", async function (req, res) {
   res.send(await User.find());
@@ -64,7 +66,7 @@ router.post("/register", async function (req, res) {
           to: user.email,
           //Subject and text data
           subject: "WALCOW EMAIL CONFIRMATION",
-          html: `Hello!, use this link to confirm your email: <br/><a href=${link}>Click aqui...</a>`,
+          html: generateConfirmationHtml(link),
         };
 
         if (!process.env.AVOID_EMAIL) {

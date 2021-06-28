@@ -6,7 +6,7 @@ async function transaction(name, strategy, req, res) {
   if (
     !req.body.token ||
     !req.body.tokenUser ||
-    !req.body.price ||
+    !req.body.amount ||
     !req.body.quantity
   ) {
     res.status(400);

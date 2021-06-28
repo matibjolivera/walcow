@@ -17,10 +17,6 @@ router.get("/", async function (req, res) {
 });
 
 router.post("/register", async function (req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Accept,Authorization');
-
     if (
         !req.body.username ||
         !req.body.password ||
@@ -56,7 +52,7 @@ router.post("/register", async function (req, res) {
         user.password = await bcrypt.hash(user.password, salt);
         user.token = generateAccessToken(user);
 
-        var mailgun = new Mailgun({
+        /*var mailgun = new Mailgun({
           apiKey: process.env.MAILGUN_API_KEY,
           domain: process.env.MAILGUN_DOMAIN,
         });
@@ -75,8 +71,7 @@ router.post("/register", async function (req, res) {
 
         if (!process.env.AVOID_EMAIL) {
           await mailgun.messages().send(data);
-        }
-
+        }*/
 
         await user.save();
 

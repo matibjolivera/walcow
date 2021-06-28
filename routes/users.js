@@ -70,7 +70,7 @@ router.post("/register", async function (req, res) {
         };
 
         if (!process.env.AVOID_EMAIL) {
-            mailgun.messages().send(data);
+            await mailgun.messages().send(data);
         }
 
         await user.save();

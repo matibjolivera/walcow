@@ -28,8 +28,11 @@ schema.post("save", (u) => {
                 });
                 await w.save();
                 u.wallets.push(w);
-                await u.save();
+
             });
+
+            await u.save();
+
         })
     }
 });

@@ -9,6 +9,8 @@ const User = require("../models/User");
 const response = require("../responses");
 const validateToken = require("../utils/validate-token");
 const generateAccessToken = require("../utils/generateAccessToken");
+const generateConfirmationHtml = require("../utils/generateConfirmationHtml");
+
 
 router.get("/", async function (req, res) {
   res.send(await User.find());
@@ -49,14 +51,13 @@ router.post("/register", async function (req, res) {
         const salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(user.password, salt);
         user.token = generateAccessToken(user);
-        await user.save();
 
         var mailgun = new Mailgun({
           apiKey: process.env.MAILGUN_API_KEY,
           domain: process.env.MAILGUN_DOMAIN,
         });
 
-        let link = `localhost:8080/access/confirm-email/${user.token}`;
+        let link = `${process.env.FRONT_URL}/access/confirm-email/${user.token}`;
 
         let data = {
           //Specify email data
@@ -65,12 +66,15 @@ router.post("/register", async function (req, res) {
           to: user.email,
           //Subject and text data
           subject: "WALCOW EMAIL CONFIRMATION",
-          html: `Hello!, use this link to confirm your email: <br/><a href=${link}>Click aqui...</a>`,
+          html: generateConfirmationHtml(link),
         };
 
         if (!process.env.AVOID_EMAIL) {
           await mailgun.messages().send(data);
         }
+
+
+        await user.save();
 
         res.json({
           user: {

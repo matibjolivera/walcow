@@ -5,7 +5,7 @@ const User = require("./models/User");
 async function transaction(name, strategy, req, res) {
   if (
     !req.body.token ||
-    !req.body.tokenUser ||
+    !req.header("auth-token") ||
     !req.body.amount ||
     !req.body.quantity
   ) {
@@ -15,7 +15,7 @@ async function transaction(name, strategy, req, res) {
     );
   }
 
-  let user = await User.findOne({ token: req.body.tokenUser });
+  let user = await User.findOne({ token: req.header("auth-token") });
 
   let quantity = req.body.quantity;
   let amount = req.body.amount;
@@ -27,7 +27,7 @@ async function transaction(name, strategy, req, res) {
     );
   }
 
-  strategy(user, quantity).then((r) => {
+  strategy(user, quantity, amount).then((r) => {
     Wallet.findOneAndUpdate(
       {
         user: user._id,
@@ -51,10 +51,10 @@ async function transaction(name, strategy, req, res) {
 module.exports.sell = async (req, res) => {
   await transaction(
     "sell",
-    async (user, quantity) => {
+    async (user, quantity, amount) => {
       return {
-        quantity: -req.body.quantity,
-        fiat: user.fiat + quantity,
+        quantity: -quantity,
+        fiat: user.fiat + amount,
       };
     },
     req,
@@ -65,10 +65,10 @@ module.exports.sell = async (req, res) => {
 module.exports.buy = async (req, res) => {
   await transaction(
     "buy",
-    async (user, quantity) => {
+    async (user, quantity, amount) => {
       return {
-        quantity: req.body.quantity,
-        fiat: user.fiat - quantity,
+        quantity: quantity,
+        fiat: user.fiat - amount,
       };
     },
     req,

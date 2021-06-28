@@ -45,7 +45,8 @@ schema.statics.toJSON = (user) => {
         firstname: user.firstname,
         lastname: user.lastname,
         token: user.token,
-        wallets: user.wallets
+        wallets: user.wallets,
+        fiat: user.fiat
     }
 }
 

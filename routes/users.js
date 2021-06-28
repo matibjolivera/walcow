@@ -49,7 +49,6 @@ router.post("/register", async function (req, res) {
         const salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(user.password, salt);
         user.token = generateAccessToken(user);
-        await user.save();
 
 
         var mailgun = new Mailgun({
@@ -57,7 +56,7 @@ router.post("/register", async function (req, res) {
         domain: process.env.MAILGUN_DOMAIN,
         });
 
-        let link = `localhost:8080/access/confirm-email/${user.token}`;
+        let link = `${process.env.FRONT_URL}/access/confirm-email/${user.token}`;
 
         let data = {
             //Specify email data
@@ -73,6 +72,8 @@ router.post("/register", async function (req, res) {
             await mailgun.messages().send(data);
         }
 
+
+        await user.save();
 
         res.json({
             user: {

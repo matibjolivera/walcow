@@ -5,8 +5,6 @@ const generateAccessToken = (user) => {
     username: user.username,
     password: user.password,
   };
-  return jwt.sign(generateObj, process.env.TOKEN_SECRET, {
-    expiresIn: "1d",
-  });
+  return jwt.sign(generateObj, process.env.TOKEN_SECRET);
 };
 module.exports = generateAccessToken;

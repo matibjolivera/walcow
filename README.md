@@ -10,8 +10,6 @@ El MVP contará con una autenticación de usuario segura y funcionalidades basic
 
 - Inicio de sesion
 
-- Visualizacion historial compra/venta
-
 - Transferencia dinero a wallet externa
 
 - Conversión entre criptomonedas
@@ -25,7 +23,6 @@ El MVP contará con una autenticación de usuario segura y funcionalidades basic
 - Usuarios/Clientes
 
 ## Entidades
-- Token/criptomoneda
 
 - Usuario
 
@@ -45,19 +42,37 @@ npm start
 
 
 ## Endpoints
+- GET /api/users
 
 - POST /api/users/login
 
 - POST /api/users/register
 
-- GET /api/users/:id
+- POST /api/users/changePassword
 
-- GET /api/tokens/
+- POST /api/users/deposit
+
+- POST /api/users/withdrawal
+
+- POST /api/users/data
+
+- POST /api/users/otp
+
+- POST /api/users/validate-email
+
+- GET /api/tokens
 
 - GET /api/tokens/:code
 
-- POST /api/tokens/buy
-
-- POST /api/tokens/sell
-
 - GET /api/tokens/price/:id
+
+- GET /api/wallets
+
+- GET /api/wallets/total
+
+- POST /api/wallets
+
+- POST /api/wallets/buy
+
+- POST /api/wallets/sell
+

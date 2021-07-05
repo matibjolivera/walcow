@@ -25,6 +25,7 @@ async function transaction(name, strategy, req, res) {
     res.send(
       response(false, "quantity to " + name + " is bigger than user´s capital")
     );
+    return;
   }
 
   strategy(user, quantity, amount).then((r) => {

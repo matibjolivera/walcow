@@ -13,6 +13,8 @@ const schema = new Schema({
     lastname: {type: String, required: true},
     token: {type: String, required: true},
     wallets: [{type: Schema.Types.ObjectId, ref: "Wallet"}],
+    cards: [{type: String}],
+    cbus: [{type: String}],
     fiat: {type: Number, default: Number(0)},
     created_at: {type: Date, default: Date.now},
 });
@@ -28,7 +30,6 @@ schema.post("save", (u) => {
                 });
                 await w.save();
                 u.wallets.push(w);
-
             });
 
             await u.save();
@@ -49,6 +50,8 @@ schema.statics.toJSON = (user) => {
         lastname: user.lastname,
         token: user.token,
         wallets: user.wallets,
+        cards: user.cards,
+        cbus: user.cbus,
         fiat: user.fiat
     }
 }

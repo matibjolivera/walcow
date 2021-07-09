@@ -256,8 +256,10 @@ router.post("/otp", async function (req, res) {
     try {
         if (userExist) {
             mailSended = true;
-            if (!process.env.AVOID_EMAIL) { await mailgun.messages().send(data);
-        }}
+            if (!process.env.AVOID_EMAIL) {
+                await mailgun.messages().send(data);
+            }
+        }
 
         res.status(200).json({
             emailSended: mailSended,
@@ -270,20 +272,55 @@ router.post("/otp", async function (req, res) {
 });
 
 router.patch("/validate-email", validateToken, async function (req, res) {
-  const user = await User.findOne({ token: req.header("auth-token") });
+    const user = await User.findOne({token: req.header("auth-token")});
 
-  if (user) {
-    user.confirmedEmail = true;
+    if (user) {
+        user.confirmedEmail = true;
 
-    try {
-      await user.save();
-      res.status(200).json(response(true, User.toJSON(user)));
-    } catch (err) {
-      res.status(500).json(response(false, err));
+        try {
+            await user.save();
+            res.status(200).json(response(true, User.toJSON(user)));
+        } catch (err) {
+            res.status(500).json(response(false, err));
+        }
+    } else {
+        res.status(404).json({success: false, message: "User not found"});
     }
-  } else {
-    res.status(404).json({ success: false, message: "User not found" });
-  }
 });
+
+router.post("/cards", validateToken, async function (req, res) {
+    const user = await User.findOne({token: req.header("auth-token")});
+
+    if (user) {
+        try {
+            user.cards.push(req.body.number)
+            await user.save();
+            res.status(200).json(response(true, User.toJSON(user)));
+        } catch (err) {
+            res.status(500).json(response(false, err));
+        }
+    } else {
+        res.status(404).json({success: false, message: "User not found"});
+    }
+});
+
+router.post("/cbu", validateToken, async function (req, res) {
+    const user = await User.findOne({token: req.header("auth-token")});
+
+    if (user) {
+        try {
+            user.cbus.push(req.body.number)
+            await user.save();
+            res.status(200).json(response(true, User.toJSON(user)));
+        } catch (err) {
+            res.status(500).json(response(false, err));
+        }
+    } else {
+        res.status(404).json({success: false, message: "User not found"});
+    }
+});
+
+module.exports = router;
+
 
 module.exports = router;

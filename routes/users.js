@@ -381,7 +381,7 @@ router.delete('/cbus/:number', validateToken, async (req, res) => {
 
             res.send(response(true, user.cbus));
         } catch (err) {
-            res.send(response(false, "Error"));
+            res.send(response(false, err));
         }
     } else {
         res.send(response(false, "User not found"));

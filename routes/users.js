@@ -41,64 +41,64 @@ router.post("/register", async function (req, res) {
         lastname: req.body.lastname,
     });
 
-  if (user) {
-    try {
-      const userExist = await User.find({
-        username: req.body.username,
-        email: req.body.email,
-      });
-      if (userExist.length === 0) {
-        const salt = await bcrypt.genSalt();
-        user.password = await bcrypt.hash(user.password, salt);
-        user.token = generateAccessToken(user);
+    if (user) {
+        try {
+            const userExist = await User.find({
+                username: req.body.username,
+                email: req.body.email,
+            });
+            if (userExist.length === 0) {
+                const salt = await bcrypt.genSalt();
+                user.password = await bcrypt.hash(user.password, salt);
+                user.token = generateAccessToken(user);
 
-        var mailgun = new Mailgun({
-          apiKey: process.env.MAILGUN_API_KEY,
-          domain: process.env.MAILGUN_DOMAIN,
-        });
+                var mailgun = new Mailgun({
+                    apiKey: process.env.MAILGUN_API_KEY,
+                    domain: process.env.MAILGUN_DOMAIN,
+                });
 
-        let link = `${process.env.FRONT_URL}/access/confirm-email/${user.token}`;
+                let link = `${process.env.FRONT_URL}/access/confirm-email/${user.token}`;
 
-        let data = {
-          //Specify email data
-          from: "no-reply@walcow.com",
-          //The email to contact
-          to: user.email,
-          //Subject and text data
-          subject: "WALCOW EMAIL CONFIRMATION",
-          html: generateConfirmationHtml(link),
-        };
+                let data = {
+                    //Specify email data
+                    from: "no-reply@walcow.com",
+                    //The email to contact
+                    to: user.email,
+                    //Subject and text data
+                    subject: "WALCOW EMAIL CONFIRMATION",
+                    html: generateConfirmationHtml(link),
+                };
 
-        if (!process.env.AVOID_EMAIL) {
+                if (!process.env.AVOID_EMAIL) {
 
-            try {
-                await mailgun.messages().send(data);
-            } catch(err){
-                //TODO: Handle when mailgun send an error
-                console.log('Cannot send email: ', err);
+                    try {
+                        await mailgun.messages().send(data);
+                    } catch (err) {
+                        //TODO: Handle when mailgun send an error
+                        console.log('Cannot send email: ', err);
+                    }
+                }
+
+                await user.save();
+
+                res.json({
+                    user: {
+                        username: user.username,
+                        email: user.email,
+                        firstname: user.firstname,
+                        lastname: user.lastname,
+                        token: user.token,
+                    },
+                    message: "Registration success",
+                    success: true,
+                });
+            } else {
+                res.send({message: "User already exist", canRegister: false});
             }
+        } catch (err) {
+            throw new Error(err);
         }
-
-        await user.save();
-
-        res.json({
-          user: {
-            username: user.username,
-            email: user.email,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            token: user.token,
-          },
-          message: "Registration success",
-          success: true,
-        });
-      } else {
-        res.send({ message: "User already exist", canRegister: false });
-      }
-    } catch (err) {
-      throw new Error(err);
     }
-  }
 });
 
 router.post("/login", async function (req, res) {
@@ -304,7 +304,7 @@ router.post("/cards", validateToken, async function (req, res) {
     }
 });
 
-router.post("/cbu", validateToken, async function (req, res) {
+router.post("/cbus", validateToken, async function (req, res) {
     const user = await User.findOne({token: req.header("auth-token")});
 
     if (user) {
@@ -320,7 +320,32 @@ router.post("/cbu", validateToken, async function (req, res) {
     }
 });
 
-module.exports = router;
+router.get('/cbus', validateToken, async (req, res) => {
+    const user = await User.findOne({token: req.header("auth-token")});
 
+    if (user) {
+        try {
+            res.send(response(true, user.cbus));
+        } catch (err) {
+            res.send(response(false, "Error"));
+        }
+    } else {
+        res.send(response(true, "User not found"));
+    }
+})
+
+router.get('/cards', validateToken, async (req, res) => {
+    const user = await User.findOne({token: req.header("auth-token")});
+
+    if (user) {
+        try {
+            res.send(response(true, user.cards));
+        } catch (err) {
+            res.send(response(false, "Error"));
+        }
+    } else {
+        res.send(response(true, "User not found"));
+    }
+})
 
 module.exports = router;

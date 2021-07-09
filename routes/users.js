@@ -356,6 +356,7 @@ router.delete('/cards/:number', validateToken, async (req, res) => {
             const index = user.cards.indexOf(req.params.number);
             if (index > -1) {
                 user.cards.splice(index, 1);
+                await user.save()
             }
 
             res.send(response(true, user.cards));
@@ -375,6 +376,7 @@ router.delete('/cbus/:number', validateToken, async (req, res) => {
             const index = user.cbus.indexOf(req.params.number);
             if (index > -1) {
                 user.cbus.splice(index, 1);
+                await user.save()
             }
 
             res.send(response(true, user.cbus));

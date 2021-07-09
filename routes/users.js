@@ -330,7 +330,7 @@ router.get('/cbus', validateToken, async (req, res) => {
             res.send(response(false, "Error"));
         }
     } else {
-        res.send(response(true, "User not found"));
+        res.send(response(false, "User not found"));
     }
 })
 
@@ -344,7 +344,45 @@ router.get('/cards', validateToken, async (req, res) => {
             res.send(response(false, "Error"));
         }
     } else {
-        res.send(response(true, "User not found"));
+        res.send(response(false, "User not found"));
+    }
+})
+
+router.delete('/cards/:number', validateToken, async (req, res) => {
+    const user = await User.findOne({token: req.header("auth-token")});
+
+    if (user) {
+        try {
+            const index = user.cards.indexOf(req.params.number);
+            if (index > -1) {
+                user.cards.splice(index, 1);
+            }
+
+            res.send(response(true, user.cards));
+        } catch (err) {
+            res.send(response(false, "Error"));
+        }
+    } else {
+        res.send(response(false, "User not found"));
+    }
+})
+
+router.delete('/cbus/:number', validateToken, async (req, res) => {
+    const user = await User.findOne({token: req.header("auth-token")});
+
+    if (user) {
+        try {
+            const index = user.cbus.indexOf(req.params.number);
+            if (index > -1) {
+                user.cbus.splice(index, 1);
+            }
+
+            res.send(response(true, user.cbus));
+        } catch (err) {
+            res.send(response(false, "Error"));
+        }
+    } else {
+        res.send(response(false, "User not found"));
     }
 })
 

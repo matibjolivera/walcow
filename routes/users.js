@@ -355,7 +355,7 @@ router.delete('/cards/:number', validateToken, async (req, res) => {
         try {
             const index = user.cards.indexOf(req.params.number);
             if (index > -1) {
-                user.cards.pull(users.cbus[index]);
+                user.cards.pull(users.cards[index]);
                 await user.save()
             }
 

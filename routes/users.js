@@ -320,7 +320,7 @@ router.post("/cbus", validateToken, async function (req, res) {
     }
 });
 
-router.get('/cbus', validateToken, async (req, res) => {
+router.get('/cbus', async (req, res) => {
     const user = await User.findOne({token: req.header("auth-token")});
 
     if (user) {
@@ -334,7 +334,7 @@ router.get('/cbus', validateToken, async (req, res) => {
     }
 })
 
-router.get('/cards', validateToken, async (req, res) => {
+router.get('/cards', async (req, res) => {
     const user = await User.findOne({token: req.header("auth-token")});
 
     if (user) {
@@ -348,14 +348,16 @@ router.get('/cards', validateToken, async (req, res) => {
     }
 })
 
-router.delete('/cards/:number', validateToken, async (req, res) => {
+router.delete('/cards/:number', async (req, res) => {
     const user = await User.findOne({token: req.header("auth-token")});
 
     if (user) {
         try {
-            const index = user.cards.indexOf(req.params.number);
+            let cards = user.cards
+            const index = cards.indexOf(req.params.number);
             if (index > -1) {
-                user.cards.pull(users.cards[index]);
+                cards.splice(index, 1);
+                user.cards = cards
                 await user.save()
             }
 
@@ -368,20 +370,22 @@ router.delete('/cards/:number', validateToken, async (req, res) => {
     }
 })
 
-router.delete('/cbus/:number', validateToken, async (req, res) => {
+router.delete('/cbus/:number', async (req, res) => {
     const user = await User.findOne({token: req.header("auth-token")});
 
     if (user) {
         try {
-            const index = user.cbus.indexOf(req.params.number);
+            let cbus = user.cbus
+            const index = cbus.indexOf(req.params.number);
             if (index > -1) {
-                user.cbus.pull(users.cbus[index]);
+                cbus.splice(index, 1);
+                user.cbus = cbus
                 await user.save()
             }
 
             res.send(response(true, user.cbus));
         } catch (err) {
-            res.send(response(false, err.message));
+            res.send(response(false, "Error"));
         }
     } else {
         res.send(response(false, "User not found"));

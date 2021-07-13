@@ -43,12 +43,20 @@ router.get("/total", async (req, res) => {
                 .sort('-quantity')
 
             let total = 0
+            let walletData = [];
+            let allTokens = await tokens.getTokens();
+
             for (const w of wallets) {
-                const t = await tokens.getPrice(w.token)
-                total += w.quantity * t.price
+                const lToken = allTokens.filter(tkn => tkn.id === w.token);
+                const t = lToken[0];
+                total += w.quantity * t.market_data.current_price.usd;
+                walletData.push({'wallet': w, 'token': t});
             }
 
-            res.send(response(true, total));
+            let rsp = response(true, total);
+            rsp['detail'] = walletData;
+
+            res.send(rsp);
         } else {
             return res.send({message: "Invalid token", canLogin: false});
         }

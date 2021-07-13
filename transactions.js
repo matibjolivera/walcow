@@ -55,7 +55,7 @@ module.exports.sell = async (req, res) => {
             if (quantity > wallet.quantity) {
                 res.status(500);
                 res.send(
-                    response(false, "quantity to " + name + " is bigger than user´s capital")
+                    response(false, "quantity is bigger than user´s capital")
                 );
             }
             console.log("fiat: " + user.fiat)
@@ -74,10 +74,12 @@ module.exports.buy = async (req, res) => {
     await transaction(
         "buy",
         async (user, quantity, amount, token) => {
+            console.log("AMOUNT: " + amount)
+            console.log(user.fiat)
             if (amount > user.fiat) {
                 res.status(500);
                 res.send(
-                    response(false, "quantity to " + name + " is bigger than user´s capital")
+                    response(false, "quantity is bigger than user´s capital")
                 );
             }
             return {
